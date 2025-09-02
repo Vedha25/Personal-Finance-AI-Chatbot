@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - AI-Powered Financial Guidance</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-toggle a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .dashboard {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .user-info h2 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #666;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card h3 i {
+            margin-right: 10px;
+            color: #667eea;
+        }
+
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.bot {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+        }
+
+        .chat-input button {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .auth-container, .dashboard {
+                padding: 20px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Finance Tracker</h1>
+            <p>AI-Powered Financial Guidance System</p>
+        </div>
+
+        <!-- Authentication Container -->
+        <div id="authContainer" class="auth-container">
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Welcome Back</h2>
+                <div id="loginError" class="error hidden"></div>
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                <div class="auth-toggle">
+                    <p>Don't have an account? <a href="#" onclick="toggleAuth()">Sign Up</a></p>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Create Account</h2>
+                <div id="registerError" class="error hidden"></div>
+                <form id="registerFormElement">
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerFullName">Full Name</label>
+                        <input type="text" id="registerFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerAge">Age</label>
+                        <input type="number" id="registerAge" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerOccupation">Occupation</label>
+                        <input type="text" id="registerOccupation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerIncome">Income Level</label>
+                        <select id="registerIncome" required>
+                            <option value="">Select Income Level</option>
+                            <option value="low">Low (< $50k)</option>
+                            <option value="medium">Medium ($50k - $100k)</option>
+                            <option value="high">High (> $100k)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerRisk">Risk Tolerance</label>
+                        <select id="registerRisk" required>
+                            <option value="">Select Risk Tolerance</option>
+                            <option value="conservative">Conservative</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="aggressive">Aggressive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+                <div class="auth-toggle">
+                    <p>Already have an account? <a href="#" onclick="toggleAuth()">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard hidden">
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <h2 id="userName">Welcome!</h2>
+                    <p id="userEmail">user@example.com</p>
+                </div>
+                <button class="btn logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i class="fas fa-user"></i> Profile</h3>
+                    <p><strong>Age:</strong> <span id="userAge">-</span></p>
+                    <p><strong>Occupation:</strong> <span id="userOccupation">-</span></p>
+                    <p><strong>Income Level:</strong> <span id="userIncome">-</span></p>
+                    <p><strong>Risk Tolerance:</strong> <span id="userRisk">-</span></p>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-chart-pie"></i> Financial Overview</h3>
+                    <p><strong>Account Status:</strong> <span style="color: #28a745;">Active</span></p>
+                    <p><strong>Member Since:</strong> <span id="userCreated">-</span></p>
+                    <p><strong>Last Login:</strong> <span id="lastLogin">-</span></p>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-lightbulb"></i> AI Insights</h3>
+                    <p>Get personalized financial advice from our AI-powered system. Ask questions about:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Investment strategies</li>
+                        <li>Budget planning</li>
+                        <li>Debt management</li>
+                        <li>Retirement planning</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-container">
+                <h3><i class="fas fa-comments"></i> AI Financial Advisor</h3>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message bot">
+                        Hello! I'm your AI financial advisor. How can I help you today? You can ask me about investments, budgeting, debt management, or any financial topics.
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Ask me about your finances..." onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = '/api/v1';
+        let currentUser = null;
+        let accessToken = localStorage.getItem('accessToken');
+
+        // Check if user is already logged in
+        if (accessToken) {
+            showDashboard();
+        }
+
+        // Toggle between login and register forms
+        function toggleAuth() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('accessToken', data.access_token);
+                    localStorage.setItem('refreshToken', data.refresh_token);
+                    currentUser = data.user;
+                    showDashboard();
+                    showSuccess('Login successful!');
+                } else {
+                    showError('loginError', data.detail || 'Login failed');
+                }
+            } catch (error) {
+                showError('loginError', 'Network error. Please try again.');
+            }
+        });
+
+        // Handle register form submission
+        document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                username: document.getElementById('registerUsername').value,
+                full_name: document.getElementById('registerFullName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                age: parseInt(document.getElementById('registerAge').value),
+                occupation: document.getElementById('registerOccupation').value,
+                income_level: document.getElementById('registerIncome').value,
+                risk_tolerance: document.getElementById('registerRisk').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('Registration successful! Please login.');
+                    toggleAuth(); // Switch to login form
+                    document.getElementById('registerFormElement').reset();
+                } else {
+                    showError('registerError', data.detail || 'Registration failed');
+                }
+            } catch (error) {
+                showError('registerError', 'Network error. Please try again.');
+            }
+        });
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            if (currentUser) {
+                updateUserInfo();
+            } else {
+                // Fetch user info using stored token
+                fetchUserInfo();
+            }
+        }
+
+        // Update user information display
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            document.getElementById('userName').textContent = `Welcome, ${currentUser.full_name}!`;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userAge').textContent = currentUser.age;
+            document.getElementById('userOccupation').textContent = currentUser.occupation;
+            document.getElementById('userIncome').textContent = currentUser.income_level;
+            document.getElementById('userRisk').textContent = currentUser.risk_tolerance;
+            document.getElementById('userCreated').textContent = new Date(currentUser.created_at).toLocaleDateString();
+            document.getElementById('lastLogin').textContent = 'Just now';
+        }
+
+        // Fetch user information from API
+        async function fetchUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    currentUser = userData;
+                    updateUserInfo();
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        }
+
+        // Handle chat functionality
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show loading message
+            const loadingId = addMessage('Thinking...', 'bot', 'loading');
+            
+            try {
+                // Send message to AI service
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    // Remove loading message and add AI response
+                    removeMessage(loadingId);
+                    addMessage(data.response || 'I apologize, but I couldn\'t process your request at the moment.', 'bot');
+                } else {
+                    removeMessage(loadingId);
+                    addMessage('I\'m having trouble connecting right now. Please try again later.', 'bot');
+                }
+            } catch (error) {
+                removeMessage(loadingId);
+                addMessage('I\'m having trouble connecting right now. Please try again later.', 'bot');
+            }
+        }
+
+        // Add message to chat
+        function addMessage(text, sender, className = '') {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender} ${className}`;
+            messageDiv.textContent = text;
+            messageDiv.id = 'msg-' + Date.now();
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageDiv.id;
+        }
+
+        // Remove message from chat
+        function removeMessage(messageId) {
+            const message = document.getElementById(messageId);
+            if (message) {
+                message.remove();
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            currentUser = null;
+            
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+            
+            // Reset forms
+            document.getElementById('loginFormElement').reset();
+            document.getElementById('registerFormElement').reset();
+            
+            // Clear errors
+            hideAllErrors();
+        }
+
+        // Utility functions
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function showSuccess(message) {
+            // You can implement a success toast or notification here
+            console.log('Success:', message);
+        }
+
+        function hideAllErrors() {
+            document.querySelectorAll('.error').forEach(error => {
+                error.classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
